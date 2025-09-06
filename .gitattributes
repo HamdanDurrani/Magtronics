@@ -1,2 +1,8 @@
 # Auto detect text files and perform LF normalization
 * text=auto
+
+
+# DATABASE_URL="sqlite:/.///app.db"
+# SECERT_KEY="4152fd00ede97585f02a65d56a8986a200c7dcf99ec91292fb036471e5d28f91"
+# ALGORITHMS="HS256"
+# JSON_EXPIRE_TIME=20
