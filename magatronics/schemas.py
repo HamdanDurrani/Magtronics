@@ -39,6 +39,10 @@ class UserValidation(BaseModel):
 
 
 
+class TokenValidation(BaseModel):
+    access_token: str
+    token_type: str 
+
 
 
 

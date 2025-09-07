@@ -5,7 +5,7 @@ from typing import Annotated
 from sqlalchemy.orm import Session
 from models import Inventory
 from schemas import InventoryValidation
-
+from .auth import get_current_user
 
 
 router=APIRouter(
@@ -24,12 +24,14 @@ def database_dependency():
         db.close()
 
 db_inj=Annotated[Session, Depends(database_dependency)]
-
+user_inj=Annotated[dict, Depends(get_current_user)]
 
 
 
 @router.get("/read-all")
-async def Read_all__items(db:db_inj):
+async def Read_all__items(user:user_inj, db:db_inj):
+    if user is None:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="user not found")  
     return db.query(Inventory).all()
 
 
