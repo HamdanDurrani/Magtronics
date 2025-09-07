@@ -53,10 +53,11 @@ def authenticate_a_user(username:str, password:str, db):
     
     return model
 
-def create_access_token(username:str, id :int , exp_time:timedelta):
+def create_access_token(username:str, id :int, role:str, exp_time:timedelta):
     encode={
         "sub":username,
-        "id":id
+        "id":id,
+        "role":role
     }
     e_time =datetime.now(timezone.utc) + exp_time
     encode.update({"exp":e_time})
@@ -70,13 +71,15 @@ async def get_current_user(token:Annotated[str, Depends(oauth2)]):
         payload =jwt.decode(token, key=SECERT_KEY, algorithms=ALGORITHM)
         username:str = payload.get("sub")
         id:int=payload.get("id")
+        role:str= payload.get("role")
 
         if username is None or id is None:
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="YOUR ID OR USERNAME IS NONE")
         
         return {
             "username":username,
-            "id":id
+            "id":id,
+            "role":role
         }
     except JWTError:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="THERE IS ERROR IN YOUR JWT")
@@ -95,10 +98,10 @@ async def All_users(db:db_inj):
 # ##########################################################################################################################################
 
 
-# #role     =  user |  admin
+#role     =  user |  admin
 
-# #username =    a  |  hamdan
-# #password =    a  |  hamdan
+#username =    a  |  hamdan
+#password =    a  |  hamdan
 
 
 
@@ -114,7 +117,12 @@ async def All_users(db:db_inj):
 #         role=new_user.role,
 #         is_active=new_user.is_active
 #     )
-    
+
+#     username_check= db.query(Users).filter(Users.username==model.username).first()
+#     if username_check is not None:
+#         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="USERNAME ALREADY EXIST")
+
+
 #     db.add(model)
 #     db.commit()
 #     return "YOUR USER IS ADDEDD SUCESSFULLY"
@@ -128,10 +136,7 @@ async def Access_token(form:form_inj, db:db_inj):
 
     model=authenticate_a_user(form.username, form.password, db=db )
 
-    # if model is True:
-    #     raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,detail="your username or password is incorrect".upper())
-    
-    token=create_access_token(model.username, model.id , JSON_EXPIRE_TIME)
+    token=create_access_token(model.username, model.id, model.role, JSON_EXPIRE_TIME)
 
     return {"access_token":token,"token_type":"bearer"}
 

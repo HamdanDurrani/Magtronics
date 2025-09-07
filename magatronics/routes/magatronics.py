@@ -7,6 +7,7 @@ from models import Inventory
 from schemas import InventoryValidation
 from .auth import get_current_user
 
+# ##########################################################################################################################################
 
 router=APIRouter(
     prefix="/magatronics",
@@ -14,6 +15,7 @@ router=APIRouter(
 )
 
 
+# ##########################################################################################################################################
 
 
 def database_dependency():
@@ -27,14 +29,18 @@ db_inj=Annotated[Session, Depends(database_dependency)]
 user_inj=Annotated[dict, Depends(get_current_user)]
 
 
+# ##########################################################################################################################################
 
 @router.get("/read-all")
 async def Read_all__items(user:user_inj, db:db_inj):
+
     if user is None:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="user not found")  
+    
     return db.query(Inventory).all()
 
 
+# ##########################################################################################################################################
 
 @router.post("/adding-item")
 async def Adding_an_item(db:db_inj, new_item:InventoryValidation):
@@ -46,6 +52,7 @@ async def Adding_an_item(db:db_inj, new_item:InventoryValidation):
     return "item added sucessfully" 
 
 
+# ##########################################################################################################################################
 
 @router.put("/coustomizing-coustom/is-required/")
 async def Edit(db:db_inj, id:int , updated:InventoryValidation):
@@ -64,6 +71,7 @@ async def Edit(db:db_inj, id:int , updated:InventoryValidation):
     db.commit()
 
 
+# ##########################################################################################################################################
 
 
 @router.delete("/deleting/deletin-a-product/id-required/{id}")
@@ -77,6 +85,7 @@ async def Remove_an_item(db:db_inj, id :int):
 
     db.commit()
 
+# ##########################################################################################################################################
 
 
 

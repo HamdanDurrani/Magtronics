@@ -15,6 +15,7 @@ class Users(Base):
     email=Column(String, unique=True )
     hashed_password=Column(String)
     role =Column(String)
+    phone=Column(String)
     is_active=Column(Boolean, default=True)
 
 
@@ -28,8 +29,23 @@ class Inventory(Base):
     description=Column(String)
     sku=Column(String)
     stock=Column(Boolean)
+    quantity=Column(Integer)
+    price=Column(Integer)
     owner_id=Column(Integer, ForeignKey("users_data.id"))
 
+
+
+class Messages(Base):
+
+    __tablename__="user_messages"
+
+    id =Column(Integer, primary_key=True, index=True)
+    title =Column(String)
+    description=Column(String)
+    user_username =Column(String, ForeignKey("Users.username"))
+    user_email =Column(String, ForeignKey("Users.email"))
+    status=Column(String)
+    
 
 
 

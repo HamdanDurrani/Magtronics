@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 import models 
 from database import engine
-from routes import magatronics, auth
+from routes import magatronics, auth, admin
 
 
 
@@ -13,5 +13,6 @@ app=FastAPI(
 models.Base.metadata.create_all(bind=engine)
 
 app.include_router(auth.router)
-app.include_router(magatronics.router)
+app.include_router(admin.router)
+# app.include_router(magatronics.router)
 
