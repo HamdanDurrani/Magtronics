@@ -1,2 +1,2 @@
 # Magtronics
-This is fastapi backend code for an ecommerce website 
+This is fastapi backend code for a magatronics website 

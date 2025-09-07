@@ -90,7 +90,7 @@ async def get_current_user(token:Annotated[str, Depends(oauth2)]):
 
 
 
-@router.get("/reading-all-the-users")
+@router.get("/reading-all-the-users", status_code=status.HTTP_200_OK)
 async def All_users(db:db_inj):
     return db.query(Users).all()
 
@@ -105,33 +105,39 @@ async def All_users(db:db_inj):
 
 
 
-# @router.post("/adding-users")
-# async def Add_new_user(db:db_inj, new_user:UserValidation):
+@router.post("/adding-users", status_code=status.HTTP_201_CREATED)
+async def Add_new_user(db:db_inj, new_user:UserValidation):
 
-#     model=Users(
-#         first_name=new_user.first_name,
-#         last_name=new_user.last_name,
-#         username =new_user.username,
-#         email=new_user.email,
-#         hashed_password=bcrypt_context.hash(new_user.password),
-#         role=new_user.role,
-#         is_active=new_user.is_active
-#     )
+    model=Users(
+        first_name=new_user.first_name,
+        last_name=new_user.last_name,
+        username =new_user.username,
+        email=new_user.email,
+        hashed_password=bcrypt_context.hash(new_user.password),
+        role=new_user.role,
+        is_active=new_user.is_active,
+        phone=new_user.phone
+    )
 
-#     username_check= db.query(Users).filter(Users.username==model.username).first()
-#     if username_check is not None:
-#         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="USERNAME ALREADY EXIST")
+    username_check= db.query(Users).filter(Users.username==model.username).first()
+    if username_check is not None:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="USERNAME ALREADY EXIST")
+    email_check=db.query(Users).filter(Users.email==model.email).first()
+    if email_check is not None:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="EMAIL ALREADY EXIST GO AND LOG IN ")
+    phone_check=db.query(Users).filter(Users.phone==model.phone).first()
+    if phone_check is not None:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="YOUR PHONE NUMBER IS ALREADY REGISTERED")
 
-
-#     db.add(model)
-#     db.commit()
-#     return "YOUR USER IS ADDEDD SUCESSFULLY"
+    db.add(model)
+    db.commit()
+    return "YOUR USER IS ADDEDD SUCESSFULLY"
 
 
 
 # ##########################################################################################################################################
 
-@router.post("/token",response_model=TokenValidation)
+@router.post("/token",response_model=TokenValidation, status_code=status.HTTP_201_CREATED)
 async def Access_token(form:form_inj, db:db_inj):
 
     model=authenticate_a_user(form.username, form.password, db=db )

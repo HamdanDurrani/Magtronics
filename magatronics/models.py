@@ -1,6 +1,6 @@
 from database import Base
 from sqlalchemy import Column, String, Integer, Boolean, ForeignKey
-
+from sqlalchemy.orm import relationship
 
 
 
@@ -15,7 +15,7 @@ class Users(Base):
     email=Column(String, unique=True )
     hashed_password=Column(String)
     role =Column(String)
-    phone=Column(String)
+    phone=Column(String, unique=True)
     is_active=Column(Boolean, default=True)
 
 
@@ -42,9 +42,11 @@ class Messages(Base):
     id =Column(Integer, primary_key=True, index=True)
     title =Column(String)
     description=Column(String)
-    user_username =Column(String, ForeignKey("Users.username"))
-    user_email =Column(String, ForeignKey("Users.email"))
+    user_username =Column(String, ForeignKey("users_data.username"))
+    user_email =Column(String, ForeignKey("users_data.email"))
     status=Column(String)
+
+    # user=relationship(Users,backref="messages")
     
 
 

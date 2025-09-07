@@ -13,7 +13,7 @@ from starlette import status
 
 router=APIRouter(
     prefix="/admin/admins-protected",
-    tags=["ADMINS CRUD"]
+    tags=["ADMINS CRUD (only for admins)"]
 )
 
 
@@ -34,7 +34,7 @@ user_inj=Annotated[dict, Depends(get_current_user)]
 # ##########################################################################################################################################
 
 
-@router.get("/get-all-users")
+@router.get("/get-all-users", status_code=status.HTTP_200_OK)
 async def Reading_all_users(user:user_inj, db:db_inj):
 
     if user is None:
@@ -47,7 +47,7 @@ async def Reading_all_users(user:user_inj, db:db_inj):
 
 
 
-@router.get("/get-all-admins")
+@router.get("/get-all-admins", status_code=status.HTTP_200_OK)
 async def Reading_all_admins(user:user_inj, db:db_inj):
 
 
@@ -59,7 +59,7 @@ async def Reading_all_admins(user:user_inj, db:db_inj):
     return db.query(Users).filter(Users.role=="admin").all()
 
 
-@router.get("/get-all-products")
+@router.get("/get-all-products", status_code=status.HTTP_200_OK)
 async def Reading_all_products(user:user_inj, db:db_inj):
 
     if user is None:
@@ -70,7 +70,7 @@ async def Reading_all_products(user:user_inj, db:db_inj):
 
     return db.query(Inventory).all()
 
-@router.get("/read-user-messages")
+@router.get("/read-user-messages", status_code=status.HTTP_200_OK)
 async def Reading_all_messages_of_user(user:user_inj, db:db_inj):
 
     if user is None:
@@ -82,7 +82,7 @@ async def Reading_all_messages_of_user(user:user_inj, db:db_inj):
     return db.query(Messages).all()
 
 
-@router.get("/read-user-messages/email-required/")
+@router.get("/read-user-messages/email-required/", status_code=status.HTTP_200_OK)
 async def Reading_specific_messages_of_user(user:user_inj, db:db_inj, email:str):
 
     if user is None:
@@ -107,7 +107,7 @@ async def Reading_specific_messages_of_user(user:user_inj, db:db_inj, email:str)
 
 
 
-@router.post("/add-a-product/adding/")
+@router.post("/add-a-product/adding/", status_code=status.HTTP_201_CREATED)
 async def Adding_a_product(user:user_inj, db:db_inj, new_product:InventoryValidation):
     if user is None:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="YOU USERNAME OR PASSWORD NOT FOUND")
@@ -125,7 +125,7 @@ async def Adding_a_product(user:user_inj, db:db_inj, new_product:InventoryValida
 # ##########################################################################################################################################
 
 
-@router.put("/update-user-complaints/email-required/")
+@router.put("/update-user-complaints/email-required/", status_code=status.HTTP_204_NO_CONTENT)
 async def Update_complaint_status(user:user_inj, db:db_inj, email:str, updated_status:StatusValidation):
     if user is None:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="YOU USERNAME OR PASSWORD NOT FOUND")
@@ -212,5 +212,3 @@ async def Delete_a_item(user:user_inj, db:db_inj, id:int):
     
     model =db.query(Inventory).filter(Inventory.id==id).delete()
     db.commit()
-
-

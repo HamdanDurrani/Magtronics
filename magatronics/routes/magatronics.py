@@ -28,23 +28,28 @@ def database_dependency():
 db_inj=Annotated[Session, Depends(database_dependency)]
 user_inj=Annotated[dict, Depends(get_current_user)]
 
-
 # ##########################################################################################################################################
 
-@router.get("/read-all")
+@router.get("/read-all", status_code=status.HTTP_200_OK)
 async def Read_all__items(user:user_inj, db:db_inj):
 
     if user is None:
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="user not found")  
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="user not found") 
+    if user.get("role")=="admin":
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="ADMINS NOT ALLOWED TO MAKE USER OPERATIONS") 
     
     return db.query(Inventory).all()
 
 
 # ##########################################################################################################################################
 
-@router.post("/adding-item")
-async def Adding_an_item(db:db_inj, new_item:InventoryValidation):
-
+@router.post("/adding-item", status_code=status.HTTP_201_CREATED)
+async def Adding_an_item(user:user_inj, db:db_inj, new_item:InventoryValidation):
+    if user is None:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="user not found") 
+    if user.get("role")=="admin":
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="ADMINS NOT ALLOWED TO MAKE USER OPERATIONS") 
+    
     model = Inventory(**new_item.model_dump())
 
     db.add(model)
@@ -54,9 +59,13 @@ async def Adding_an_item(db:db_inj, new_item:InventoryValidation):
 
 # ##########################################################################################################################################
 
-@router.put("/coustomizing-coustom/is-required/")
-async def Edit(db:db_inj, id:int , updated:InventoryValidation):
-
+@router.put("/coustomizing-coustom/is-required/", status_code=status.HTTP_204_NO_CONTENT)
+async def Edit(user:user_inj, db:db_inj, id:int , updated:InventoryValidation):
+    if user is None:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="user not found") 
+    if user.get("role")=="admin":
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="ADMINS NOT ALLOWED TO MAKE USER OPERATIONS") 
+    
     model= db.query(Inventory).filter(Inventory.id == id).first()
     if model is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="YOUR ID DOES NOT EXIST")
@@ -74,9 +83,13 @@ async def Edit(db:db_inj, id:int , updated:InventoryValidation):
 # ##########################################################################################################################################
 
 
-@router.delete("/deleting/deletin-a-product/id-required/{id}")
-async def Remove_an_item(db:db_inj, id :int):
-
+@router.delete("/deleting/deletin-a-product/id-required/{id}", status_code=status.HTTP_204_NO_CONTENT)
+async def Remove_an_item(user:user_inj, db:db_inj, id :int):
+    if user is None:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="user not found") 
+    if user.get("role")=="admin":
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="ADMINS NOT ALLOWED TO MAKE USER OPERATIONS") 
+    
     model =db.query(Inventory).filter(Inventory.id==id).first()
     if model is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="YOUR ID IS INVALID")
