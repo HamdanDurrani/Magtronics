@@ -1,18 +1,20 @@
 from fastapi import FastAPI
 import models 
 from database import engine
-from routes import magatronics, auth, admin
+from routes import magatronics, auth, admin, user_setting
 
 
 
 app=FastAPI(
     title="MAGATRONICS",
-    description="THIS IS THE BACK END OF MAGATRONICS WEBSITE WHERE WE PERFORM CRUD AND WE CAN HAVE DIFFERENT USERS "
+    description="THIS IS THE BACK END OF MAGATRONICS WEBSITE WHERE WE PERFORM CRUD AND WE CAN HAVE DIFFERENT USERS ",
+    version="29.06"
 )
 
 models.Base.metadata.create_all(bind=engine)
 
 app.include_router(auth.router)
-# app.include_router(admin.router)
+app.include_router(admin.router)
 app.include_router(magatronics.router)
+app.include_router(user_setting.router)
 

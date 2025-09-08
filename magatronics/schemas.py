@@ -1,4 +1,4 @@
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, field_validator
 from typing import Optional
 
 
@@ -92,4 +92,18 @@ class StatusValidation(BaseModel):
         }
 
 
+
+class ChangePasswordValidation(BaseModel):
+
+    password:str=Field(min_length=8)
+
+    class Config:
+        json_schema_extra={
+            "example":{
+                "password":"XXX-MUST_BE_8_DIGITS-XXX"
+            }
+        }
+
+    # @field_validator
+    # def password_request()
 
